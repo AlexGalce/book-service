@@ -21,5 +21,4 @@ public interface BookService {
 	Iterable<String> findPublishersByAuthor(String authorName);
 	
 	AuthorDto removeAuthor(String authorName);
-
 }

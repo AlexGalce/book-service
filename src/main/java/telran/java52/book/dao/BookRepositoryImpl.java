@@ -11,38 +11,35 @@ import telran.java52.book.model.Book;
 
 @Repository
 public class BookRepositoryImpl implements BookRepository {
-
+	
 	@PersistenceContext
 	EntityManager em;
-	
+
 	@Override
 	public Stream<Book> findByAuthorsName(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return em.createQuery("select b from Book b join b.authors a where a.name=?1", Book.class)
+				.setParameter(1, name)
+				.getResultStream();
 	}
 
 	@Override
 	public Stream<Book> findByPublisherPublisherName(String publisherName) {
-		// TODO Auto-generated method stub
-		return null;
+		return em.createQuery("select b from Book b join b.publisher p where p.publisherName=?1", Book.class)
+				.setParameter(1, publisherName)
+				.getResultStream();
 	}
 
 	@Override
 	public void deleteByAuthorsName(String name) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Optional<Book> findById(String isbn) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+		em.createQuery("delete from Book b where ?1 members of b.authors")
+			.setParameter(1, name)
+			.executeUpdate();
+		
 	}
 
 	@Override
 	public boolean existsById(String isbn) {
-		
-		return em.find(Book.class, isbn) !=null;
+		return em.find(Book.class, isbn) != null;
 	}
 
 	@Override
@@ -52,9 +49,13 @@ public class BookRepositoryImpl implements BookRepository {
 	}
 
 	@Override
-	public void deleteById(String isbn) {
-		// TODO Auto-generated method stub
+	public Optional<Book> findById(String isbn) {
+		return Optional.ofNullable(em.find(Book.class, isbn));
+	}
 
+	@Override
+	public void deleteById(String isbn) {
+		em.remove(em.find(Book.class, isbn));
 	}
 
 }
